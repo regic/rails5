@@ -5,13 +5,13 @@ application up and running.
 
 Things you may want to cover:
 
-* Ruby version
+* Ruby version 2.2.10
 
 * System dependencies
 
 * Configuration
 
-* Database creation
+* Database creation - MySQL 5.7
 
 * Database initialization
 
