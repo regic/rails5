@@ -1,6 +1,6 @@
 env:
   global:
-    - 62c3cc32f27d201dd0c1b5bfa6f345a0d9c8caf2d98488eff43839b8d308c7cf
+    - CC_TEST_REPORTER_ID=62c3cc32f27d201dd0c1b5bfa6f345a0d9c8caf2d98488eff43839b8d308c7cf
 language: ruby
 rvm:
   - 2.2.10
@@ -12,3 +12,7 @@ script:
   - bundle exec rspec
 after_script:
   - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+addons:
+  code_climate:
+    repo_token:
+      secure: "c1HruTpEAfYIjlEAI1Pj4OAcmAktCuvpaDf7A6BzdeyVeeYs5/PPHfuEEBElHTUvVfg5rIXUVWRxhm1+4eVHxagMTx0b3lovNmK9w2jBulDnAdg4H5f8outXjfVGggO3nKTDsTUFJJIgrnRIAhVmm5iJ33uSEcy6Z2TyUSjyMBQfl02IZH3itdXy/Pkq4EF1OhWC2nk4iENTOYITw22KTmD/CM4yQdU0QuwE1QX9lpijJXsY2XuzRcROHOQoD/9t5GnGuGuJfYgxiS+dwU2sd7IBxleg3/5e4arkeVLztJa8BzFEuq+8Iyy19Cbjfv+fCUB0mC6weQyi8kKm0Ctp5PL+HapuGv36gKvVlBpwtmTJU0x8qJBvVHNpEGB7nCJVallnxiz7Av9TOGseUhVraLyFFTpJJ8Kze+a3nSNMbuxCWbj2N5CSGv78Rx80BbWKaJDAxvqoCMqAGE4BGlzKry8u7NsttR+7qLhFWrFm3zoSOUmp3nhnzRWU8f+gf5bCw51qBnI4cCtXgNNFSsEV1Qx52zkgeG1Wbx4DeiNqVu7IZBUV3V69gPUkbWbeFsD5zculYfA7qd3Cfu6I3uHcBj0EzA8SaTV8C8+oVYsK9la77RiSh19U5c98WT8en20hNL1c2cih1MgZaf01iGWuLj/+C/ElY4Aju3DoRnEo0t0="
