@@ -1,7 +1,7 @@
 env:
-  # matrix:
-  #   - TEST_SUITE=rspec
-  #   - TEST_SUITE=cucumber
+  matrix:
+    - TEST_SUITE=rspec
+    - TEST_SUITE=cucumber
   global:
     - CC_TEST_REPORTER_ID=62c3cc32f27d201dd0c1b5bfa6f345a0d9c8caf2d98488eff43839b8d308c7cf
 language: ruby
@@ -25,7 +25,6 @@ before_script:
 
 jobs:
   allow_failures:
-    - script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json
-    - script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json
+    - script: bundle exec $TEST_SUITE && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.$TEST_SUITE.json
     - stage: codeclimate
       script: ./cc-test-reporter sum-coverage /tmp/coverage/codeclimate.*.json -p 2 -o /tmp/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i "/tmp/coverage/codeclimate.json"
