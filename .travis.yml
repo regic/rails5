@@ -15,11 +15,30 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 
+# jobs:
+#   include:
+#     - stage: test
+#       script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json
+#     - stage: test
+#       script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json
+#     - stage: deploy
+#       script: ls -alFX /tmp/coverage/ && ls -alFX coverage/ && ./cc-test-reporter sum-coverage /tmp/coverage/codeclimate.*.json -p 2 -o /tmp/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i "/tmp/coverage/codeclimate.json"
+
+
 jobs:
   include:
     - stage: test
-      script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json
+      script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.rspec.json && ls -alFX
+      workspaces:
+        create:
+          name: shared
+          paths: .
     - stage: test
-      script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json
-    - stage: deploy
-      script: ls -alFX /tmp/coverage/ && ls -alFX coverage/ && ./cc-test-reporter sum-coverage /tmp/coverage/codeclimate.*.json -p 2 -o /tmp/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i "/tmp/coverage/codeclimate.json"
+      workspaces:
+        use: shared
+      script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.cucumber.json && ls -alFX
+
+    - stage: codeclimate
+      workspaces:
+        use: shared
+      script: ls -alFX && ls -alFX coverage/ && ./cc-test-reporter sum-coverage /tmp/coverage/codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
