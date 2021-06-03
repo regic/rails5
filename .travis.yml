@@ -26,9 +26,11 @@ jobs:
       script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o $HOME/coverage/codeclimate.rspec.json && ls -alFX $HOME/coverage
     - stage: test
       script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o $HOME/coverage/codeclimate.cucumber.json && ls -alFX $HOME/coverage
-    - stage: deploy
-      script: ls -alFX $HOME/coverage/ && ./cc-test-reporter sum-coverage $HOME/coverage/codeclimate.*.json -p 2 -o $HOME/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i $HOME/coverage/codeclimate.json
-
+deploy:
+  provider: script
+  script: ls -alFX $HOME/coverage/ && ./cc-test-reporter sum-coverage $HOME/coverage/codeclimate.*.json -p 2 -o $HOME/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i $HOME/coverage/codeclimate.json
+  on:
+    all_branches: true
 
 # jobs:
 #   include:
