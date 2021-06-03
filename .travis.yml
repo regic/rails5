@@ -39,4 +39,4 @@ jobs:
     - stage: codeclimate
       workspaces:
         use: shared
-      script: ls -alFX && ls -alFX coverage/ && ./cc-test-reporter sum-coverage /tmp/coverage/codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
+      script: ls -alFX && ls -alFX coverage/ && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
