@@ -41,8 +41,6 @@ jobs:
           name: cucumber
           paths: .
     - stage: codeclimate
-      git:
-        clone: false
       language: minimal
       install: skip
       before_script: skip
