@@ -39,6 +39,8 @@ end
 
 group :test do
   gem 'simplecov'
+  gem 'cucumber-rails', '1.6.0', :require => false
+  gem 'database_cleaner', '1.7.0'
 end
 
 group :development do
