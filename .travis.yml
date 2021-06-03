@@ -22,4 +22,4 @@ jobs:
     - stage: test
       script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json
     - stage: deploy
-      script: ./cc-test-reporter sum-coverage /tmp/coverage/codeclimate.*.json -p 2 -o /tmp/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i "/tmp/coverage/codeclimate.json"
+      script: ls -alFX /tmp/coverage/ && ls -alFX coverage/ && ./cc-test-reporter sum-coverage /tmp/coverage/codeclimate.*.json -p 2 -o /tmp/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i "/tmp/coverage/codeclimate.json"
