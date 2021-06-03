@@ -45,6 +45,7 @@ jobs:
       install: skip
       before_script: skip
       script: skip
+      services: skip
       workspaces:
         use:
           - rspec
