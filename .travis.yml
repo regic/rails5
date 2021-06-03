@@ -6,6 +6,7 @@ services:
   - mysql
 cache:
   bundler: true
+  apt: true
 rvm:
   - 2.2.10
 before_script:
@@ -40,6 +41,7 @@ jobs:
           name: cucumber
           paths: .
     - stage: codeclimate
+      language: minimal
       install: skip
       before_script: skip
       script: skip
@@ -47,4 +49,4 @@ jobs:
         use:
           - rspec
           - cucumber
-      script: ls -alFX ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
+      script: ls -alFX && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
