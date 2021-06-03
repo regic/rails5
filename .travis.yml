@@ -1,4 +1,7 @@
 env:
+  matrix:
+    - TEST_SUITE=rspec
+    - TEST_SUITE=cucumber
   global:
     - CC_TEST_REPORTER_ID=62c3cc32f27d201dd0c1b5bfa6f345a0d9c8caf2d98488eff43839b8d308c7cf
 language: ruby
@@ -8,19 +11,16 @@ cache:
   bundler: true
 rvm:
   - 2.2.10
-matrix:
-  include:
-    - rvm: 2.2.10
-      gemfile: Gemfile
-      script: bundle exec rspec
-    - rvm: 2.2.10
-      gemfile: Gemfile
-      script: bundle exec cucumber
 before_script:
   - mysql -e 'CREATE DATABASE bio_test;'
   - "cp .travis.database.yml ./config/database.yml"
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
-after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+
+jobs:
+  include:
+    - stage: test
+      script: bundle exec $TEST_SUITE && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.$TEST_SUITE.json
+    - stage: codeclimate
+      script: ./cc-test-reporter sum-coverage /tmp/coverage/codeclimate.*.json -p 2 -o /tmp/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i "/tmp/coverage/codeclimate.json"
