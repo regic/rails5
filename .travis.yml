@@ -41,6 +41,8 @@ jobs:
           name: cucumber
           paths: .
     - stage: codeclimate
+      git:
+        clone: false
       language: minimal
       install: skip
       before_script: skip
@@ -50,4 +52,4 @@ jobs:
         use:
           - rspec
           - cucumber
-      script: ls -alFX && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
+      script: mkdir -p regic/rails5 && cd regic/rails5 && ls -alFX && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
