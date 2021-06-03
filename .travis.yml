@@ -31,13 +31,17 @@ jobs:
       script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.rspec.json && ls -alFX
       workspaces:
         create:
-          name: shared
+          name: rspec
           paths: .
     - stage: test
-      workspaces:
-        use: shared
       script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.cucumber.json && ls -alFX
+      workspaces:
+        create:
+          name: cucumber
+          paths: .
     - stage: codeclimate
       workspaces:
-        use: shared
+        use:
+          - rspec
+          - cucumber
       script: ls -alFX && ls -alFX coverage/ && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
