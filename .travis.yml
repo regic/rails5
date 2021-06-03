@@ -32,6 +32,7 @@ jobs:
       workspaces:
         create:
           name: shared
+          paths: .
     - stage: test
       workspaces:
         use: shared
