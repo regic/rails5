@@ -6,6 +6,8 @@ services:
   - mysql
 cache:
   bundler: true
+  directories:
+    - $HOME/coverage
 rvm:
   - 2.2.10
 before_script:
@@ -15,33 +17,33 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 
-# jobs:
-#   include:
-#     - stage: test
-#       script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json
-#     - stage: test
-#       script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json
-#     - stage: deploy
-#       script: ls -alFX /tmp/coverage/ && ls -alFX coverage/ && ./cc-test-reporter sum-coverage /tmp/coverage/codeclimate.*.json -p 2 -o /tmp/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i "/tmp/coverage/codeclimate.json"
-
-
 jobs:
   include:
     - stage: test
-      script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.rspec.json && ls -alFX
-      workspaces:
-        create:
-          name: rspec
-          paths: .
+      script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o $HOME/coverage/codeclimate.rspec.json && ls -alFX $HOME/coverage
     - stage: test
-      script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.cucumber.json && ls -alFX
-      workspaces:
-        create:
-          name: cucumber
-          paths: .
-    - stage: codeclimate
-      workspaces:
-        use:
-          - rspec
-          - cucumber
-      script: ls -alFX && ls -alFX coverage/ && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
+      script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o $HOME/coverage/codeclimate.cucumber.json && ls -alFX $HOME/coverage
+    - stage: deploy
+      script: ls -alFX $HOME/coverage/ && ./cc-test-reporter sum-coverage $HOME/coverage/codeclimate.*.json -p 2 -o $HOME/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i $HOME/coverage/codeclimate.json
+
+
+# jobs:
+#   include:
+#     - stage: test
+#       script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.rspec.json && ls -alFX
+#       workspaces:
+#         create:
+#           name: rspec
+#           paths: .
+#     - stage: test
+#       script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.cucumber.json && ls -alFX
+#       workspaces:
+#         create:
+#           name: cucumber
+#           paths: .
+#     - stage: codeclimate
+#       workspaces:
+#         use:
+#           - rspec
+#           - cucumber
+#       script: ls -alFX && ls -alFX coverage/ && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
