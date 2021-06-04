@@ -8,7 +8,7 @@ cache:
   bundler: true
   apt: true
   directories:
-    - "$HOME/coverage"
+    - "/home/travis/build/regic/rails5/coverage"
 rvm:
   - 2.2.10
 before_script:
@@ -21,18 +21,18 @@ before_script:
 jobs:
   include:
     - stage: test
-      script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json
+      script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o /home/travis/build/regic/rails5/coverage/codeclimate.rspec.json
       deploy:
         provider: script
-        script: pwd && ls -alFX && cd $HOME/coverage && ls -alFX
+        script: pwd && ls -alFX && cd /home/travis/build/regic/rails5/coverage && ls -alFX
         skip_cleanup: true
         on:
           all_branches: true
     - stage: test
-      script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json
+      script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o /home/travis/build/regic/rails5/coverage/codeclimate.cucumber.json
       deploy:
         provider: script
-        script: pwd && ls -alFX && cd $HOME/coverage && ls -alFX
+        script: pwd && ls -alFX && cd /home/travis/build/regic/rails5/coverage && ls -alFX
         skip_cleanup: true
         on:
           all_branches: true
