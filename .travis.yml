@@ -14,6 +14,8 @@ rvm:
 before_script:
   - mysql -e 'CREATE DATABASE bio_test;'
   - "cp .travis.database.yml ./config/database.yml"
+  - rm /home/travis/build/regic/rails5/coverage/codeclimate.rspec.json
+  - rm /home/travis/build/regic/rails5/coverage/codeclimate.cucumber.json
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
@@ -32,7 +34,7 @@ jobs:
       script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o /home/travis/build/regic/rails5/coverage/codeclimate.cucumber.json
       deploy:
         provider: script
-        script: pwd && ls -alFX && cd /home/travis/build/regic/rails5/coverage && ls -alFX
+        script: if [[ -f coverage/codeclimate.rspec.json && -f coverage/codeclimate.cucumber.json ]]; then ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json; fi
         skip_cleanup: true
         on:
           all_branches: true
