@@ -25,8 +25,14 @@ jobs:
       deploy:
         provider: script
         script: pwd && ls -alFX && cd $HOME/coverage && ls -alFX
+        skip_cleanup: true
+        on:
+          all_branches: true
     - stage: test
       script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json
       deploy:
         provider: script
         script: pwd && ls -alFX && cd $HOME/coverage && ls -alFX
+        skip_cleanup: true
+        on:
+          all_branches: true
