@@ -12,9 +12,9 @@ rvm:
 before_script:
   - mysql -e 'CREATE DATABASE bio_test;'
   - "cp .travis.database.yml ./config/database.yml"
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > /tmp/cc-test-reporter
-  - chmod +x /tmp/cc-test-reporter
-  - /tmp/cc-test-reporter before-build
+  - mkdir -p /tmp/coverage && curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > /tmp/coverage/cc-test-reporter
+  - chmod +x /tmp/coverage/cc-test-reporter
+  - /tmp/coverage/cc-test-reporter before-build
 
 # jobs:
 #   include:
@@ -29,17 +29,17 @@ before_script:
 jobs:
   include:
     - stage: test
-      script: bundle exec rspec && /tmp/cc-test-reporter format-coverage -t simplecov -o /tmp/codeclimate.rspec.json
+      script: bundle exec rspec && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json
       workspaces:
         create:
           name: rspec
-          paths: /tmp
+          paths: /tmp/coverage
     - stage: test
-      script: bundle exec cucumber && /tmp/cc-test-reporter format-coverage -t simplecov -o /tmp/codeclimate.cucumber.json
+      script: bundle exec cucumber && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json
       workspaces:
         create:
           name: cucumber
-          paths: /tmp
+          paths: /tmp/coverage
     - stage: codeclimate
       git:
         clone: false
@@ -52,4 +52,4 @@ jobs:
         use:
           - rspec
           - cucumber
-      script: cd /tmp && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
+      script: cd /tmp/coverage && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
