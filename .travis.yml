@@ -27,12 +27,8 @@ before_script:
 
 
 jobs:
-  allow_failures:
-    - name: test
-    - name: codeclimate
   include:
     - stage: test
-      name: test
       script: bundle exec rspec && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json
       workspaces:
         create:
@@ -45,7 +41,6 @@ jobs:
           name: cucumber
           paths: /tmp/coverage
     - stage: codeclimate
-      name: codeclimate
       git:
         clone: false
       language: minimal
