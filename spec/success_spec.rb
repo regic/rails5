@@ -1,5 +1,5 @@
 describe "success" do
   it "succeeds" do
-    expect(true).to be true
+    expect(false).to be true
   end
 end
