@@ -15,41 +15,14 @@ before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
-
-# jobs:
-#   include:
-#     - stage: test
-#       script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json
-#     - stage: test
-#       script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json
-#     - stage: deploy
-#       script: ls -alFX /tmp/coverage/ && ls -alFX coverage/ && ./cc-test-reporter sum-coverage /tmp/coverage/codeclimate.*.json -p 2 -o /tmp/coverage/codeclimate.json && ./cc-test-reporter upload-coverage -i "/tmp/coverage/codeclimate.json"
-
-
-jobs:
-  include:
-    - stage: test
-      script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.rspec.json
-      workspaces:
-        create:
-          name: rspec
-          paths: .
-    - stage: test
-      script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.cucumber.json
-      workspaces:
-        create:
-          name: cucumber
-          paths: .
-    - stage: codeclimate
-      git:
-        clone: false
-      language: minimal
-      install: skip
-      before_script: skip
-      script: skip
-      services: skip
-      workspaces:
-        use:
-          - rspec
-          - cucumber
-      script: mkdir -p regic/rails5 && cd regic/rails5 && ls -alFX && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
+script:
+ - bundle exec rspec > rspec.out 2>&1 &
+ - PID1=$!
+ - bundle exec cucumber > cucumber.out 2>&1 &
+ - PID2=$!
+ - wait $PID1
+ - wait $PID2
+ - cat rspec.out
+ - cat cucumber.out
+after_script:
+ - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
