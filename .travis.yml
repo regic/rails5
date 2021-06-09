@@ -28,16 +28,18 @@ before_script:
 
 jobs:
   allow_failures:
-    - name: codeclimate
+    - name: test
   include:
     - stage: test
-      script: bundle exec rspec && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json
+      name: test
+      script: bundle exec rspec && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json && if [ "$TRAVIS_TEST_RESULT" == 1 ]; touch /tmp/coverage/fail; fi
       workspaces:
         create:
           name: rspec
           paths: /tmp/coverage
     - stage: test
-      script: bundle exec cucumber && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json
+      name: test
+      script: bundle exec cucumber && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json && if [ "$TRAVIS_TEST_RESULT" == 1 ]; touch /tmp/coverage/fail; fi
       workspaces:
         create:
           name: cucumber
@@ -55,5 +57,5 @@ jobs:
         use:
           - rspec
           - cucumber
-      script: cd /tmp/coverage && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
+      script: cd /tmp/coverage && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json && if [ -f /tmp/coverage/fail ]; exit 1; fi
       # if: branch = master
