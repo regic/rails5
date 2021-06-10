@@ -12,24 +12,30 @@ rvm:
 before_script:
   - mysql -e 'CREATE DATABASE bio_test;'
   - "cp .travis.database.yml ./config/database.yml"
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
+  - mkdir -p /tmp/coverage && curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > /tmp/coverage/cc-test-reporter
+  - chmod +x /tmp/coverage/cc-test-reporter
+  - /tmp/coverage/cc-test-reporter before-build
 
 jobs:
+  allow_failures:
+    - stage: test
   include:
     - stage: test
-      script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.rspec.json
+      script: 
+        - bundle exec rspec
+        - STATUS=$? && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json && if [[ "$STATUS" == 1 ]]; then touch /tmp/coverage/fail; fi
       workspaces:
         create:
           name: rspec
-          paths: .
+          paths: /tmp/coverage
     - stage: test
-      script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.cucumber.json
+      script:
+        - bundle exec cucumber
+        - STATUS=$? && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json && if [[ "$STATUS" == 1 ]]; then touch /tmp/coverage/fail; fi
       workspaces:
         create:
           name: cucumber
-          paths: .
+          paths: /tmp/coverage
     - stage: codeclimate
       git:
         clone: false
@@ -42,5 +48,5 @@ jobs:
         use:
           - rspec
           - cucumber
-      script: mkdir -p regic/rails5 && cd regic/rails5 && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
+      script: cd /tmp/coverage && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json && if [ -f /tmp/coverage/fail ]; then exit 1; fi
       # if: branch = master
