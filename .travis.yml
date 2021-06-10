@@ -22,14 +22,14 @@ jobs:
   include:
     - stage: test
       name: test
-      script: bundle exec rspec && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json && if [ "$TRAVIS_TEST_RESULT" == 1 ]; touch /tmp/coverage/fail; fi
+      script: bundle exec rspec && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json && if [ "$TRAVIS_TEST_RESULT" == 1 ]; then touch /tmp/coverage/fail; fi
       workspaces:
         create:
           name: rspec
           paths: /tmp/coverage
     - stage: test
       name: test
-      script: bundle exec cucumber && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json && if [ "$TRAVIS_TEST_RESULT" == 1 ]; touch /tmp/coverage/fail; fi
+      script: bundle exec cucumber && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json && if [ "$TRAVIS_TEST_RESULT" == 1 ]; then touch /tmp/coverage/fail; fi
       workspaces:
         create:
           name: cucumber
