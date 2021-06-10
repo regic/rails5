@@ -23,7 +23,7 @@ jobs:
     - stage: test
       script: 
         - bundle exec rspec
-        - STATUS=$? && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json && ls -alFX /tmp/coverage && if [[ "$STATUS" == 1 ]]; then touch /tmp/coverage/fail && echo "RSPEC_FAIL" && exit 1; else echo "RSPEC_PASS"; fi
+        - STATUS=$? && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json && ls -alFX /tmp/coverage && if [[ "$STATUS" == 1 ]]; then touch /tmp/coverage/fail && echo "RSPEC_FAIL"; else echo "RSPEC_PASS"; fi
       workspaces:
         create:
           name: rspec
