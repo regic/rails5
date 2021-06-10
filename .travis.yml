@@ -20,8 +20,8 @@ script:
  - PID1=$!
  - bundle exec cucumber > cucumber.out 2>&1 &
  - PID2=$!
- - wait $PID1
- - wait $PID2
+ - travis_wait 60 wait $PID1
+ - travis_wait 60 wait $PID2
  - cat rspec.out
  - cat cucumber.out
 after_script:
