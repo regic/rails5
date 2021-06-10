@@ -18,24 +18,23 @@ before_script:
 
 jobs:
   allow_failures:
-    - name: test
+    - stage: test
   include:
     - stage: test
-      name: test
-      script: bundle exec rspec && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json && if [ "$TRAVIS_TEST_RESULT" == 1 ]; then touch /tmp/coverage/fail; fi
+      script: 
+        - bundle exec rspec
+        - STATUS=$? && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.rspec.json && ls -alFX /tmp/coverage && if [[ "$STATUS" == 1 ]]; then touch /tmp/coverage/fail && echo "RSPEC_FAIL" && exit 1; else echo "RSPEC_PASS"; fi
       workspaces:
         create:
           name: rspec
           paths: /tmp/coverage
     - stage: test
-      name: test
-      script: bundle exec cucumber && /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json && if [ "$TRAVIS_TEST_RESULT" == 1 ]; then touch /tmp/coverage/fail; fi
+      script: bundle exec cucumber; STATUS=$?; /tmp/coverage/cc-test-reporter format-coverage -t simplecov -o /tmp/coverage/codeclimate.cucumber.json; ls -alFX /tmp/coverage; if [[ "$STATUS" == 1 ]]; then touch /tmp/coverage/fail && echo "CUCUMBER_FAIL" && exit 1; else echo "CUCUMBER_PASS"; fi
       workspaces:
         create:
           name: cucumber
           paths: /tmp/coverage
     - stage: codeclimate
-      name: codeclimate
       git:
         clone: false
       language: minimal
@@ -47,5 +46,5 @@ jobs:
         use:
           - rspec
           - cucumber
-      script: cd /tmp/coverage && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json && if [ -f /tmp/coverage/fail ]; then exit 1; fi
+      script: cd /tmp/coverage && ls -alFX && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json && if [ -f /tmp/coverage/fail ]; then echo "FFAAIILL"; exit 1; else echo "PPAASSSS"; fi
       # if: branch = master
