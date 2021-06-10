@@ -25,5 +25,5 @@ script:
  - cat rspec.out
  - cat cucumber.out
 after_script:
- # - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
- - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
+  - ./cc-test-reporter after-build
+  # - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
