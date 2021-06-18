@@ -1,6 +1,7 @@
 env:
   global:
     - CC_TEST_REPORTER_ID=62c3cc32f27d201dd0c1b5bfa6f345a0d9c8caf2d98488eff43839b8d308c7cf
+    - AWS_DEFAULT_REGION=us-east-1
 language: ruby
 services:
   - mysql
@@ -15,32 +16,46 @@ before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
+  - 'curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"'
+  - 'unzip awscli-bundle.zip'
+  - './awscli-bundle/install -b ~/bin/aws'
+  - 'export PATH=~/bin:$PATH'
 
 jobs:
   include:
     - stage: test
-      script: bundle exec rspec && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.rspec.json
+      script: bundle exec rspec
+      after_script:
+        - ./cc-test-reporter format-coverage -t simplecov -o ./coverage/codeclimate.rspec.json ./coverage/spec/.resultset.json
+        - aws s3 sync coverage/ "s3://s3dev-codeclimate/coverage/$TRAVIS_BUILD_NUMBER"
+        - aws s3 sync "s3://s3dev-codeclimate/coverage/$TRAVIS_BUILD_NUMBER" coverage/
+        - ./cc-test-reporter sum-coverage --output - --parts 2 coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --input -
       workspaces:
         create:
           name: rspec
           paths: .
     - stage: test
       script: bundle exec cucumber && ./cc-test-reporter format-coverage -t simplecov -o codeclimate.cucumber.json
+      after_script:
+        - ./cc-test-reporter format-coverage -t simplecov -o ./coverage/codeclimate.cucumber.json ./coverage/spec/.resultset.json
+        - aws s3 sync coverage/ "s3://s3dev-codeclimate/coverage/$TRAVIS_BUILD_NUMBER"
+        - aws s3 sync "s3://s3dev-codeclimate/coverage/$TRAVIS_BUILD_NUMBER" coverage/
+        - ./cc-test-reporter sum-coverage --output - --parts 2 coverage/codeclimate.*.json | ./cc-test-reporter upload-coverage --input -
       workspaces:
         create:
           name: cucumber
           paths: .
-    - stage: codeclimate
-      git:
-        clone: false
-      language: minimal
-      install: skip
-      before_script: skip
-      script: skip
-      services: skip
-      workspaces:
-        use:
-          - rspec
-          - cucumber
-      script: mkdir -p regic/rails5 && cd regic/rails5 && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
-      # if: branch = master
+    # - stage: codeclimate
+    #   git:
+    #     clone: false
+    #   language: minimal
+    #   install: skip
+    #   before_script: skip
+    #   script: skip
+    #   services: skip
+    #   workspaces:
+    #     use:
+    #       - rspec
+    #       - cucumber
+    #   script: mkdir -p regic/rails5 && cd regic/rails5 && ./cc-test-reporter sum-coverage codeclimate.*.json -p 2 -o codeclimate.json && ./cc-test-reporter upload-coverage -i codeclimate.json
+    #   # if: branch = master
